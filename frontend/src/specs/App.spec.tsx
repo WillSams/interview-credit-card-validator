@@ -41,7 +41,7 @@ describe('App routing', () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByRole('heading', { name: /template app/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: /credit card validator/i })).toBeInTheDocument();
   });
 
   it('renders the 404 page for unknown routes', () => {
