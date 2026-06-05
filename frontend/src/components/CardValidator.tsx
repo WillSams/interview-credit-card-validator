@@ -13,7 +13,12 @@ export default function CardValidator() {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+    <Box
+      component="form"
+      onSubmit={handleSubmit}
+      noValidate
+      sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
+    >
       <TextField
         label="Card Number"
         value={cardNumber}
