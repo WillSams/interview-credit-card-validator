@@ -1,27 +1,30 @@
-# TypeScript Fullstack Template
+# Credit Card Validator
 
 **TypeScript · React · Material UI · Zustand · Fastify · AWS Lambda · S3 · CloudFront · Terraform**
 
-[![Application Unit Tests](https://github.com/WillSams/fullstack-typescript-template/actions/workflows/pr-validate.yml/badge.svg)](https://github.com/WillSams/fullstack-typescript-template/actions/workflows/pr-validate.yml)
+[![Application Unit Tests](https://github.com/WillSams/interview-credit-card-validator/actions/workflows/pr-validate.yml/badge.svg)](https://github.com/WillSams/interview-credit-card-validator/actions/workflows/pr-validate.yml)
 
-A reusable full-stack TypeScript template. Fork it, rename things, and ship.
+A full-stack credit card validation app. Enter a card number and the backend validates it using the Luhn checksum algorithm.
 
 ![text](screenshot.png)
 
-## When to use this stack
+## Assumptions
 
-**React + Zustand** is a good fit when we want a proven, widely supported UI library without the ceremony of heavier state solutions like Redux. Zustand keeps global state simple: no boilerplate, no provider wrapping our whole tree, and very little setup. That makes it easier to onboard new contributors and keeps the codebase lean as requirements evolve.
+### Functional
 
-**Fastify on Lambda** earns its place when traffic is variable or unpredictable. We pay only for actual invocations, cold starts stay reasonable because of Fastify’s low overhead and an esbuild single-file bundle, and we get automatic scaling without managing servers. It is a good choice for internal tools, MVPs, and APIs that do not justify running a container 24/7.
+- Validation is performed exclusively in the backend via `POST /validate` — the frontend never runs the Luhn algorithm itself
+- The input accepts common formatting characters (spaces and dashes) and strips them before validation
+- Only the Luhn checksum is evaluated — the app does not detect card network (Visa, Mastercard, etc.), check card length by network, or validate expiry or CVV
 
-The combination makes sense when:
+### Non-Functional
 
-- We want **TypeScript end-to-end** with shared types between frontend and backend
-- Traffic is **bursty or low-volume**, where serverless pricing beats reserved capacity
-- Our team wants **minimal ops** with no clusters, auto-scaling groups, or load balancers to manage
-- We need a **quick foundation** for a new project without starting from scratch each time
+- **No authentication** — the API is open; any caller can POST to `/validate`
+- **No persistence** — validation results are not stored anywhere; each request is stateless
+- **No rate limiting** — the API does not throttle requests
+- **Serverless** — the backend is designed for bursty/low-volume traffic as an AWS Lambda function; a long-running server would be more appropriate for sustained high throughput
+- **CORS** — allowed origins are configured via the `ALLOWED_ORIGINS` environment variable; defaults to `*` in development
 
-If we expect sustained high-throughput traffic, such as thousands of requests per second continuously, a long-running container behind a load balancer will likely be cheaper. For everything else, this stack gets us to production quickly without much operational overhead.
+## Tech Stack
 
 | Layer | Tech |
 |---|---|
@@ -35,8 +38,6 @@ If we expect sustained high-throughput traffic, such as thousands of requests pe
 - [Node.js 22](https://nodejs.org/) — use `nvm use` to pick the version in `.nvmrc`
 - [nvm](https://github.com/nvm-sh/nvm) *(recommended)*
 - [direnv](https://direnv.net/) *(recommended)*
-- [Terraform CLI](https://developer.hashicorp.com/terraform/install) — for infra changes
-- [AWS CLI](https://aws.amazon.com/cli/) — for deployments
 
 ## Getting Started
 
@@ -59,32 +60,51 @@ npm run dev
 
 The frontend is served at `http://localhost:3000` and the backend at `http://localhost:8080`.
 
+## API
+
+### `POST /validate`
+
+Validates a credit card number using the Luhn checksum algorithm.
+
+- **Request**
+
+```json
+{ "cardNumber": "4532 0151 1283 0366" }
+```
+
+- **Response**
+
+```json
+{ "valid": true }
+```
+
+| Status | Meaning |
+|---|---|
+| `200` | Validation ran — check `valid` for the result |
+| `400` | `cardNumber` is missing or not a string |
+
 ## Project Structure
 
 ```
-fullstack-typescript-template/
-├── frontend/          # React + Zustand SPA (deploys to S3 + CloudFront)
+interview-credit-card-validator/
+├── frontend/                  # React SPA (deploys to S3 + CloudFront)
+│   └── src/
+│       ├── api/               # Axios client
+│       ├── components/
+│       │   └── CardValidator  # Form + result display
+│       ├── pages/             # Route-level components
+│       ├── stores/
+│       │   └── cardStore      # Zustand store — calls POST /validate
+│       └── specs/             # Vitest tests
+├── backend/                   # Fastify API (deploys as Lambda)
 │   ├── src/
-│   │   ├── api/       # Axios client
-│   │   ├── pages/     # Route-level components
-│   │   ├── stores/    # Zustand stores
-│   │   └── specs/     # Vitest tests + setup
-│   └── vite.config.ts
-├── backend/           # Fastify API (deploys as Lambda)
-│   ├── src/
-│   │   ├── app.ts     # Fastify instance + routes
-│   │   ├── index.ts   # Lambda handler entry point
-│   │   └── server.ts  # Local dev server
-│   └── specs/         # Jest tests
-├── .infrastructure/   # Terraform
-│   ├── api_gateway.tf # HTTP API → Lambda
-│   ├── frontend.tf    # S3 bucket + CloudFront
-│   ├── lambda.tf      # Lambda function (ECR image)
-│   ├── iam.tf
-│   ├── logs.tf
-│   └── environments/  # demo / staging / prod tfvars
+│   │   ├── luhn.ts            # Luhn checksum algorithm
+│   │   ├── app.ts             # Fastify instance + routes
+│   │   ├── index.ts           # Lambda handler entry point
+│   │   └── server.ts          # Local dev server
+│   └── specs/                 # Jest tests
 └── .github/
-    └── workflows/     # CI: lint + test on every PR
+    └── workflows/             # CI: lint + test on every PR
 ```
 
 ## Scripts
@@ -109,66 +129,15 @@ From the project root:
 ## Testing
 
 ```bash
-# Backend (Jest)
+# Backend — Jest (Luhn algorithm + API endpoint)
 npm run test:backend
 
-# Frontend (Vitest)
+# Frontend — Vitest (store + component)
 npm run test:frontend
-```
-
-## Infrastructure
-
-The Terraform configuration in `.infrastructure/` provisions:
-
-- **Lambda** function (Docker image from ECR)
-- **API Gateway HTTP API** with CORS and `$default` catch-all route
-- **S3 bucket** for the React SPA (private, versioned)
-- **CloudFront** distribution with OAC, HTTPS redirect, and SPA 404 fallback
-- **IAM** role + `AWSLambdaBasicExecutionRole` policy
-- **CloudWatch** log group with configurable retention
-
-```bash
-cd .infrastructure
-
-# Initialise (once)
-terraform init
-
-# Plan against an environment
-terraform plan -var-file=environments/demo.tfvars
-
-# Apply
-terraform apply -var-file=environments/demo.tfvars
-```
-
-### Deploying the frontend
-
-After `terraform apply`, sync the Vite build to the S3 bucket:
-
-```bash
-cd frontend && npm run build
-aws s3 sync dist/ s3://$(terraform -chdir=../.infrastructure output -raw s3_bucket) --delete
-```
-
-### Deploying the backend
-
-Build and push the Docker image to ECR, then update the Lambda:
-
-```bash
-cd backend && npm run build
-
-# Tag and push to ECR (replace with your account/region/function name)
-aws ecr get-login-password | docker login --username AWS --password-stdin <account>.dkr.ecr.<region>.amazonaws.com
-docker build -t fastify-template-function .
-docker tag fastify-template-function:latest <account>.dkr.ecr.<region>.amazonaws.com/fastify-template-function:latest
-docker push <account>.dkr.ecr.<region>.amazonaws.com/fastify-template-function:latest
-
-aws lambda update-function-code \
-  --function-name <environment>-fastify-template-function \
-  --image-uri <account>.dkr.ecr.<region>.amazonaws.com/fastify-template-function:latest
 ```
 
 ## Code Quality
 
 Pre-commit hooks (Husky) run format + lint on every commit. Pre-push hooks run the full test suite.
 
-GitHub Actions runs lint and tests on every PR to `main`. Branch names must follow semantic conventions (`feat/`, `fix/`, `chore/`, `refactor/`, `docs/`, `style/`, `test/`).
+GitHub Actions runs lint and tests on every PR to `main`.
