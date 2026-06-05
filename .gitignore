@@ -34,3 +34,6 @@ Thumbs.db
 .infrastructure/*.tfstate.backup
 
 Senior_SWE_ENG_Case_Study_2026.pdf
+docs/
+
+# package-lock files — commit all for reproducible CI installs
