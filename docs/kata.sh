@@ -7,8 +7,8 @@
 #       exclusively in the backend.
 #
 # TDD workflow per suite:
-#   RED   — write one failing test, commit it
-#   GREEN — once all suite tests pass, commit the implementation
+#   RED   — write one failing test (wrong expected value forces failure)
+#   GREEN — fix the expected value with sed, or fix the implementation
 #   SQUASH — squash all suite commits into one clean commit
 #
 # Prerequisites:
@@ -36,9 +36,11 @@ cd backend  && npm install && cd ..
 ###########################################################################
 # 2 - Luhn algorithm                                                      #
 ###########################################################################
+
+# Test - accepts a valid Visa number
 echo "export function luhn(): boolean {
   return false;
-}" > src/luhn.ts
+}" > backend/src/luhn.ts
 
 echo "import { luhn } from '#src/luhn';
 
@@ -47,675 +49,251 @@ describe('luhn', () => {
     it('accepts a valid Visa number', () => {
       expect(luhn('4532015112830366')).toBe(true);
     });
+
+    // second valid card test
+  });
+
+  describe('invalid card numbers', () => {
+    // first invalid card test
+  });
+
+  describe('invalid input', () => {
+    // first invalid input test
   });
 });" > backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+echo "export function luhn(input: string): boolean {
+  const digits = input.replace(/[\s-]/g, '');
+  if (!/^\d+\$/.test(digits) || digits.length < 9) return false;
+  let sum = 0;
+  let double = false;
+  for (let i = digits.length - 1; i >= 0; i--) {
+    let digit = parseInt(digits[i], 10);
+    if (double) { digit *= 2; if (digit > 9) digit -= 9; }
+    sum += digit;
+    double = !double;
+  }
+  return sum % 10 === 0;
+}" > backend/src/luhn.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Visa number"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
+# Test - accepts a valid Mastercard number
+sed -e "/second valid card test/r"<(echo "
     it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
+      expect(luhn('5425233430109903')).toBe(false);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // third valid card test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/5425233430109903')).toBe(false)/5425233430109903')).toBe(true)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
-$COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Mastercard number"
+$COMMIT -m "Accepts a valid Mastercard number"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
+# Test - accepts a valid Amex number
+sed -e "/third valid card test/r"<(echo "
     it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
+      expect(luhn('378282246310005')).toBe(false);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // fourth valid card test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/378282246310005')).toBe(false)/378282246310005')).toBe(true)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
-$COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Amex number"
+$COMMIT -m "Accepts a valid Amex number"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
+# Test - accepts a valid Discover number
+sed -e "/fourth valid card test/r"<(echo "
     it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
+      expect(luhn('6011111111111117')).toBe(false);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // fifth valid card test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/6011111111111117')).toBe(false)/6011111111111117')).toBe(true)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
-$COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Discover number"
+$COMMIT -m "Accepts a valid Discover number"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
+# Test - accepts the canonical Luhn test number
+sed -e "/fifth valid card test/r"<(echo "
     it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
+      expect(luhn('79927398713')).toBe(false);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // sixth valid card test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/79927398713')).toBe(false)/79927398713')).toBe(true)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
-$COMMIT -m "Implement Luhn checksum algorithm that accepts a canonical Luhn test number"
+$COMMIT -m "Accepts the canonical Luhn test number"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
+# Test - strips spaces before validating
+sed -e "/sixth valid card test/r"<(echo "
     it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
+      expect(luhn('4532 0151 1283 0366')).toBe(false);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // seventh valid card test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/4532 0151 1283 0366')).toBe(false)/4532 0151 1283 0366')).toBe(true)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Strips spaces before validating"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
+# Test - strips dashes before validating
+sed -e "/seventh valid card test/r"<(echo "
     it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-});" > backend/specs/luhn.spec.ts
+      expect(luhn('4532-0151-1283-0366')).toBe(false);
+    });") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/4532-0151-1283-0366')).toBe(false)/4532-0151-1283-0366')).toBe(true)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Strips dashes before validating"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
-    it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-
-  describe('invalid card numbers', () => {
+# Test - rejects a number with a wrong check digit
+sed -e "/first invalid card test/r"<(echo "
     it('rejects a number with a wrong check digit', () => {
-      expect(luhn('4532015112830367')).toBe(false);
+      expect(luhn('4532015112830367')).toBe(true);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // second invalid card test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/4532015112830367')).toBe(true)/4532015112830367')).toBe(false)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Rejects a number with the wrong check digit"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
-    it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-
-  describe('invalid card numbers', () => {
-    it('rejects a number with a wrong check digit', () => {
-      expect(luhn('4532015112830367')).toBe(false);
-    });
-
+# Test - rejects the canonical Luhn failure number
+sed -e "/second invalid card test/r"<(echo "
     it('rejects the canonical Luhn failure number', () => {
-      expect(luhn('79927398714')).toBe(false);
+      expect(luhn('79927398714')).toBe(true);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // third invalid card test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/79927398714')).toBe(true)/79927398714')).toBe(false)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Rejects the canonical Luhn failure number"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
-    it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-
-  describe('invalid card numbers', () => {
-    it('rejects a number with a wrong check digit', () => {
-      expect(luhn('4532015112830367')).toBe(false);
-    });
-
-    it('rejects the canonical Luhn failure number', () => {
-      expect(luhn('79927398714')).toBe(false);
-    });
-
+# Test - rejects a sequential number
+sed -e "/third invalid card test/r"<(echo "
     it('rejects a sequential number', () => {
-      expect(luhn('1234567890123456')).toBe(false);
-    });
-  });
-});" > backend/specs/luhn.spec.ts
+      expect(luhn('1234567890123456')).toBe(true);
+    });") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/1234567890123456')).toBe(true)/1234567890123456')).toBe(false)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Rejects a sequential number"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
-    it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-
-  describe('invalid card numbers', () => {
-    it('rejects a number with a wrong check digit', () => {
-      expect(luhn('4532015112830367')).toBe(false);
-    });
-
-    it('rejects the canonical Luhn failure number', () => {
-      expect(luhn('79927398714')).toBe(false);
-    });
-
-    it('rejects a sequential number', () => {
-      expect(luhn('1234567890123456')).toBe(false);
-    });
-  });
-
-  describe('invalid input', () => {
+# Test - rejects an empty string
+sed -e "/first invalid input test/r"<(echo "
     it('rejects an empty string', () => {
-      expect(luhn('')).toBe(false);
+      expect(luhn('')).toBe(true);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // second invalid input test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/luhn('')).toBe(true)/luhn('')).toBe(false)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Rejects an empty string"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
-    it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-
-  describe('invalid card numbers', () => {
-    it('rejects a number with a wrong check digit', () => {
-      expect(luhn('4532015112830367')).toBe(false);
-    });
-
-    it('rejects the canonical Luhn failure number', () => {
-      expect(luhn('79927398714')).toBe(false);
-    });
-
-    it('rejects a sequential number', () => {
-      expect(luhn('1234567890123456')).toBe(false);
-    });
-  });
-
-  describe('invalid input', () => {
-    it('rejects an empty string', () => {
-      expect(luhn('')).toBe(false);
-    });
-
+# Test - rejects a non-numeric string
+sed -e "/second invalid input test/r"<(echo "
     it('rejects a non-numeric string', () => {
-      expect(luhn('abcd')).toBe(false);
+      expect(luhn('abcd')).toBe(true);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // third invalid input test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/luhn('abcd')).toBe(true)/luhn('abcd')).toBe(false)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Rejects a non-numeric string"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
-    it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-
-  describe('invalid card numbers', () => {
-    it('rejects a number with a wrong check digit', () => {
-      expect(luhn('4532015112830367')).toBe(false);
-    });
-
-    it('rejects the canonical Luhn failure number', () => {
-      expect(luhn('79927398714')).toBe(false);
-    });
-
-    it('rejects a sequential number', () => {
-      expect(luhn('1234567890123456')).toBe(false);
-    });
-  });
-
-  describe('invalid input', () => {
-    it('rejects an empty string', () => {
-      expect(luhn('')).toBe(false);
-    });
-
-    it('rejects a non-numeric string', () => {
-      expect(luhn('abcd')).toBe(false);
-    });
-
+# Test - rejects a number fewer than 9 digits
+sed -e "/third invalid input test/r"<(echo "
     it('rejects a number that is too short (fewer than 9 digits)', () => {
-      expect(luhn('1234')).toBe(false);
+      expect(luhn('1234')).toBe(true);
     });
-  });
-});" > backend/specs/luhn.spec.ts
+
+    // fourth invalid input test") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/luhn('1234')).toBe(true)/luhn('1234')).toBe(false)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Rejects a number that is fewer than 9 digits"
 
-echo "import { luhn } from '#src/luhn';
-
-describe('luhn', () => {
-  describe('valid card numbers', () => {
-    it('accepts a valid Visa number', () => {
-      expect(luhn('4532015112830366')).toBe(true);
-    });
-
-    it('accepts a valid Mastercard number', () => {
-      expect(luhn('5425233430109903')).toBe(true);
-    });
-
-    it('accepts a valid Amex number', () => {
-      expect(luhn('378282246310005')).toBe(true);
-    });
-
-    it('accepts a valid Discover number', () => {
-      expect(luhn('6011111111111117')).toBe(true);
-    });
-
-    it('accepts the canonical Luhn test number', () => {
-      expect(luhn('79927398713')).toBe(true);
-    });
-
-    it('strips spaces before validating', () => {
-      expect(luhn('4532 0151 1283 0366')).toBe(true);
-    });
-
-    it('strips dashes before validating', () => {
-      expect(luhn('4532-0151-1283-0366')).toBe(true);
-    });
-  });
-
-  describe('invalid card numbers', () => {
-    it('rejects a number with a wrong check digit', () => {
-      expect(luhn('4532015112830367')).toBe(false);
-    });
-
-    it('rejects the canonical Luhn failure number', () => {
-      expect(luhn('79927398714')).toBe(false);
-    });
-
-    it('rejects a sequential number', () => {
-      expect(luhn('1234567890123456')).toBe(false);
-    });
-  });
-
-  describe('invalid input', () => {
-    it('rejects an empty string', () => {
-      expect(luhn('')).toBe(false);
-    });
-
-    it('rejects a non-numeric string', () => {
-      expect(luhn('abcd')).toBe(false);
-    });
-
-    it('rejects a number that is too short (fewer than 9 digits)', () => {
-      expect(luhn('1234')).toBe(false);
-    });
-
+# Test - rejects a single digit
+sed -e "/fourth invalid input test/r"<(echo "
     it('rejects a single digit', () => {
-      expect(luhn('4')).toBe(false);
-    });
-  });
-});" > backend/specs/luhn.spec.ts
+      expect(luhn('4')).toBe(true);
+    });") -i -- backend/specs/luhn.spec.ts
 
 npm run test:backend  # fails
 
-echo "export function luhn(): boolean {
-  # implement code here
-}" > src/luhn.ts
+sed -i "s/luhn('4')).toBe(true)/luhn('4')).toBe(false)/" backend/specs/luhn.spec.ts
 
-npm run test:backend #passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Rejects a single digit"
@@ -724,7 +302,6 @@ $COMMIT -m "Rejects a single digit"
 # 3 - Luhn algorithm — squash 14 commits                                  #
 ###########################################################################
 
-# Squash 14 test commits into one clean commit
 git reset --soft HEAD~14
 $COMMIT -m "Implement Luhn checksum algorithm"
 
@@ -732,6 +309,7 @@ $COMMIT -m "Implement Luhn checksum algorithm"
 # 4 - POST /validate — RED: one test per commit                           #
 ###########################################################################
 
+# Test - returns valid: true for a valid card number
 echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
 import { luhn } from '#src/luhn';
@@ -754,8 +332,8 @@ fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
 });
 
 const validator = async (_request: FastifyRequest<{ Body: unknown }>, _reply: FastifyReply) => {
-    return { valid: false };
-  };
+  return { valid: false };
+};
 
 fastify.post('/validate', {}, validator);" > backend/src/app.ts
 
@@ -775,6 +353,8 @@ describe('POST /validate', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ valid: true });
   });
+
+  // second validate test
 });" > backend/specs/validate.spec.ts
 
 npm run test:backend  # fails
@@ -800,30 +380,30 @@ fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
   };
 });
 
-#implementation here" > backend/src/app.ts
+const bodySchema = {
+  body: {
+    type: 'object',
+    required: ['cardNumber'],
+    properties: {
+      cardNumber: { type: 'string' },
+    },
+    additionalProperties: false,
+  },
+};
 
-npm run test:backend # passes
+const validator = async (request: FastifyRequest<{ Body: { cardNumber: string } }>, _reply: FastifyReply) => {
+  return { valid: luhn(request.body.cardNumber) };
+};
+
+fastify.post('/validate', { schema: bodySchema }, validator);" > backend/src/app.ts
+
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Returns 'valid: true' for a valid card number"
 
-echo "import supertest from 'supertest';
-import { fastify } from '#src/app';
-
-describe('POST /validate', () => {
-  beforeAll(async () => { await fastify.ready(); });
-  afterAll(async () => { await fastify.close(); });
-
-  it('returns valid: true for a valid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
+# Test - returns valid: false for an invalid card number
+sed -e "/second validate test/r"<(echo "
   it('returns valid: false for an invalid card number', async () => {
     const response = await supertest(fastify.server)
       .post('/validate')
@@ -831,67 +411,22 @@ describe('POST /validate', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: false });
+    expect(response.body).toEqual({ valid: true });
   });
-});" > backend/specs/validate.spec.ts
+
+  // third validate test") -i -- backend/specs/validate.spec.ts
 
 npm run test:backend  # fails
 
-echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import cors from '@fastify/cors';
-import { luhn } from '#src/luhn';
+sed -i "/returns valid: false for an invalid card number/,/toEqual/{s/{ valid: true }/{ valid: false }/}" backend/specs/validate.spec.ts
 
-export const fastify = Fastify({
-  logger: process.env.ENV !== 'test',
-  ajv: { customOptions: { coerceTypes: false } },
-});
-
-await fastify.register(cors, {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-});
-
-fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
-  return {
-    status: 'Success',
-    result: process.env.ABOUT_MESSAGE ?? '',
-  };
-});
-
-#implementation here" > backend/src/app.ts
-
-npm run test:backend # passes
+npm run test:backend  # passes
 
 git add .
-$COMMIT -m "Returns 'valid: false' for a invalid card number"
+$COMMIT -m "Returns 'valid: false' for an invalid card number"
 
-echo "import supertest from 'supertest';
-import { fastify } from '#src/app';
-
-describe('POST /validate', () => {
-  beforeAll(async () => { await fastify.ready(); });
-  afterAll(async () => { await fastify.close(); });
-
-  it('returns valid: true for a valid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('returns valid: false for an invalid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830367' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: false });
-  });
-
+# Test - accepts card numbers with spaces
+sed -e "/third validate test/r"<(echo "
   it('accepts card numbers with spaces', async () => {
     const response = await supertest(fastify.server)
       .post('/validate')
@@ -899,77 +434,22 @@ describe('POST /validate', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
+    expect(response.body).toEqual({ valid: false });
   });
-});" > backend/specs/validate.spec.ts
+
+  // fourth validate test") -i -- backend/specs/validate.spec.ts
 
 npm run test:backend  # fails
 
-echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import cors from '@fastify/cors';
-import { luhn } from '#src/luhn';
+sed -i "/accepts card numbers with spaces/,/toEqual/{s/{ valid: false }/{ valid: true }/}" backend/specs/validate.spec.ts
 
-export const fastify = Fastify({
-  logger: process.env.ENV !== 'test',
-  ajv: { customOptions: { coerceTypes: false } },
-});
-
-await fastify.register(cors, {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-});
-
-fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
-  return {
-    status: 'Success',
-    result: process.env.ABOUT_MESSAGE ?? '',
-  };
-});
-
-#implementation here" > backend/src/app.ts
-
-npm run test:backend # passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Accepts card numbers with spaces"
 
-echo "import supertest from 'supertest';
-import { fastify } from '#src/app';
-
-describe('POST /validate', () => {
-  beforeAll(async () => { await fastify.ready(); });
-  afterAll(async () => { await fastify.close(); });
-
-  it('returns valid: true for a valid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('returns valid: false for an invalid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830367' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: false });
-  });
-
-  it('accepts card numbers with spaces', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532 0151 1283 0366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
+# Test - accepts card numbers with dashes
+sed -e "/fourth validate test/r"<(echo "
   it('accepts card numbers with dashes', async () => {
     const response = await supertest(fastify.server)
       .post('/validate')
@@ -977,288 +457,66 @@ describe('POST /validate', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
+    expect(response.body).toEqual({ valid: false });
   });
-});" > backend/specs/validate.spec.ts
+
+  // fifth validate test") -i -- backend/specs/validate.spec.ts
 
 npm run test:backend  # fails
 
-echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import cors from '@fastify/cors';
-import { luhn } from '#src/luhn';
+sed -i "/accepts card numbers with dashes/,/toEqual/{s/{ valid: false }/{ valid: true }/}" backend/specs/validate.spec.ts
 
-export const fastify = Fastify({
-  logger: process.env.ENV !== 'test',
-  ajv: { customOptions: { coerceTypes: false } },
-});
-
-await fastify.register(cors, {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-});
-
-fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
-  return {
-    status: 'Success',
-    result: process.env.ABOUT_MESSAGE ?? '',
-  };
-});
-
-#implementation here" > backend/src/app.ts
-
-npm run test:backend # passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Accepts card numbers with dashes"
 
-echo "import supertest from 'supertest';
-import { fastify } from '#src/app';
-
-describe('POST /validate', () => {
-  beforeAll(async () => { await fastify.ready(); });
-  afterAll(async () => { await fastify.close(); });
-
-  it('returns valid: true for a valid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('returns valid: false for an invalid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830367' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: false });
-  });
-
-  it('accepts card numbers with spaces', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532 0151 1283 0366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('accepts card numbers with dashes', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532-0151-1283-0366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
+# Test - returns 400 when cardNumber is missing
+sed -e "/fifth validate test/r"<(echo "
   it('returns 400 when cardNumber is missing', async () => {
     const response = await supertest(fastify.server)
       .post('/validate')
       .send({})
       .set('Content-Type', 'application/json');
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(200);
   });
-});" > backend/specs/validate.spec.ts
+
+  // sixth validate test") -i -- backend/specs/validate.spec.ts
 
 npm run test:backend  # fails
 
-echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import cors from '@fastify/cors';
-import { luhn } from '#src/luhn';
+sed -i "/returns 400 when cardNumber is missing/,/toBe/{s/toBe(200)/toBe(400)/}" backend/specs/validate.spec.ts
 
-export const fastify = Fastify({
-  logger: process.env.ENV !== 'test',
-  ajv: { customOptions: { coerceTypes: false } },
-});
-
-await fastify.register(cors, {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-});
-
-fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
-  return {
-    status: 'Success',
-    result: process.env.ABOUT_MESSAGE ?? '',
-  };
-});
-
-#implementation here" > backend/src/app.ts
-
-npm run test:backend # passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Returns 400 when card number is missing"
 
-echo "import supertest from 'supertest';
-import { fastify } from '#src/app';
-
-describe('POST /validate', () => {
-  beforeAll(async () => { await fastify.ready(); });
-  afterAll(async () => { await fastify.close(); });
-
-  it('returns valid: true for a valid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('returns valid: false for an invalid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830367' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: false });
-  });
-
-  it('accepts card numbers with spaces', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532 0151 1283 0366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('accepts card numbers with dashes', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532-0151-1283-0366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('returns 400 when cardNumber is missing', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({})
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(400);
-  });
-
+# Test - returns 400 when cardNumber is not a string
+sed -e "/sixth validate test/r"<(echo "
   it('returns 400 when cardNumber is not a string', async () => {
     const response = await supertest(fastify.server)
       .post('/validate')
       .send({ cardNumber: 12345 })
       .set('Content-Type', 'application/json');
 
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(200);
   });
-});" > backend/specs/validate.spec.ts
+
+  // seventh validate test") -i -- backend/specs/validate.spec.ts
 
 npm run test:backend  # fails
 
-echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import cors from '@fastify/cors';
-import { luhn } from '#src/luhn';
+sed -i "/returns 400 when cardNumber is not a string/,/toBe/{s/toBe(200)/toBe(400)/}" backend/specs/validate.spec.ts
 
-export const fastify = Fastify({
-  logger: process.env.ENV !== 'test',
-  ajv: { customOptions: { coerceTypes: false } },
-});
-
-await fastify.register(cors, {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-});
-
-fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
-  return {
-    status: 'Success',
-    result: process.env.ABOUT_MESSAGE ?? '',
-  };
-});
-
-#implementation here" > backend/src/app.ts
-
-npm run test:backend # passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Returns 400 when card number is not a string"
 
-echo "import supertest from 'supertest';
-import { fastify } from '#src/app';
-
-describe('POST /validate', () => {
-  beforeAll(async () => { await fastify.ready(); });
-  afterAll(async () => { await fastify.close(); });
-
-  it('returns valid: true for a valid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('returns valid: false for an invalid card number', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532015112830367' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: false });
-  });
-
-  it('accepts card numbers with spaces', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532 0151 1283 0366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('accepts card numbers with dashes', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: '4532-0151-1283-0366' })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: true });
-  });
-
-  it('returns 400 when cardNumber is missing', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({})
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(400);
-  });
-
-  it('returns 400 when cardNumber is not a string', async () => {
-    const response = await supertest(fastify.server)
-      .post('/validate')
-      .send({ cardNumber: 12345 })
-      .set('Content-Type', 'application/json');
-
-    expect(response.status).toBe(400);
-  });
-
+# Test - returns valid: false for an empty string
+sed -e "/seventh validate test/r"<(echo "
   it('returns valid: false for an empty string', async () => {
     const response = await supertest(fastify.server)
       .post('/validate')
@@ -1266,45 +524,22 @@ describe('POST /validate', () => {
       .set('Content-Type', 'application/json');
 
     expect(response.status).toBe(200);
-    expect(response.body).toEqual({ valid: false });
-  });
-});" > backend/specs/validate.spec.ts
+    expect(response.body).toEqual({ valid: true });
+  });") -i -- backend/specs/validate.spec.ts
 
 npm run test:backend  # fails
 
-echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
-import cors from '@fastify/cors';
-import { luhn } from '#src/luhn';
+sed -i "/returns valid: false for an empty string/,/toEqual/{s/{ valid: true }/{ valid: false }/}" backend/specs/validate.spec.ts
 
-export const fastify = Fastify({
-  logger: process.env.ENV !== 'test',
-  ajv: { customOptions: { coerceTypes: false } },
-});
-
-await fastify.register(cors, {
-  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-});
-
-fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
-  return {
-    status: 'Success',
-    result: process.env.ABOUT_MESSAGE ?? '',
-  };
-});
-
-#implementation here" > backend/src/app.ts
-
-npm run test:backend # passes
+npm run test:backend  # passes
 
 git add .
 $COMMIT -m "Returns valid: false for an empty string"
 
 ###########################################################################
-# 5 - POST /validate squash 7                                             #
+# 5 - POST /validate — squash 7 commits                                   #
 ###########################################################################
 
-# Squash 7 test commits into one clean commit
 git reset --soft HEAD~7
 $COMMIT -m "Add POST /validate endpoint using Luhn algorithm"
 
