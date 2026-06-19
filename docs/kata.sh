@@ -14,10 +14,7 @@
 # Prerequisites:
 #   - Node.js 22+ (via nvm)
 #   - git with GPG signing configured (commit.gpgsign = true)
-#
-# Update (June 5th) - painstakingly updated to align with what
-# I originally did sans the commitizen-style commits.  The 
-# commitizen-style commits are here for readability
+
 
 set -e
 
@@ -37,11 +34,13 @@ cd frontend && npm install && cd ..
 cd backend  && npm install && cd ..
 
 ###########################################################################
-# 2 - Luhn algorithm — RED: one test per commit                           #
+# 2 - Luhn algorithm                                                      #
 ###########################################################################
+echo "export function luhn(): boolean {
+  return false;
+}" > src/luhn.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -49,13 +48,20 @@ describe('luhn', () => {
       expect(luhn('4532015112830366')).toBe(true);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): accepts a valid Visa number"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Visa number"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -67,13 +73,20 @@ describe('luhn', () => {
       expect(luhn('5425233430109903')).toBe(true);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): accepts a valid Mastercard number"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Mastercard number"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -89,13 +102,20 @@ describe('luhn', () => {
       expect(luhn('378282246310005')).toBe(true);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): accepts a valid Amex number"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Amex number"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -115,13 +135,20 @@ describe('luhn', () => {
       expect(luhn('6011111111111117')).toBe(true);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): accepts a valid Discover number"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Implement Luhn checksum algorithm that accepts a valid Discover number"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -145,13 +172,20 @@ describe('luhn', () => {
       expect(luhn('79927398713')).toBe(true);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): accepts the canonical Luhn test number"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Implement Luhn checksum algorithm that accepts a canonical Luhn test number"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -179,13 +213,20 @@ describe('luhn', () => {
       expect(luhn('4532 0151 1283 0366')).toBe(true);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): strips spaces before validating"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Strips spaces before validating"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -217,13 +258,20 @@ describe('luhn', () => {
       expect(luhn('4532-0151-1283-0366')).toBe(true);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): strips dashes before validating"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Strips dashes before validating"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -261,13 +309,20 @@ describe('luhn', () => {
       expect(luhn('4532015112830367')).toBe(false);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): rejects a number with a wrong check digit"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Rejects a number with the wrong check digit"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -309,13 +364,20 @@ describe('luhn', () => {
       expect(luhn('79927398714')).toBe(false);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): rejects the canonical Luhn failure number"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Rejects the canonical Luhn failure number"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -361,13 +423,20 @@ describe('luhn', () => {
       expect(luhn('1234567890123456')).toBe(false);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): rejects a sequential number"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Rejects a sequential number"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -419,13 +488,20 @@ describe('luhn', () => {
       expect(luhn('')).toBe(false);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): rejects an empty string"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Rejects an empty string"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -481,13 +557,20 @@ describe('luhn', () => {
       expect(luhn('abcd')).toBe(false);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): rejects a non-numeric string"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Rejects a non-numeric string"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -547,13 +630,20 @@ describe('luhn', () => {
       expect(luhn('1234')).toBe(false);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): rejects a number that is too short"
+});" > backend/specs/luhn.spec.ts
 
-cat << 'EOF' > backend/specs/luhn.spec.ts
-import { luhn } from '#src/luhn';
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Rejects a number that is fewer than 9 digits"
+
+echo "import { luhn } from '#src/luhn';
 
 describe('luhn', () => {
   describe('valid card numbers', () => {
@@ -617,59 +707,59 @@ describe('luhn', () => {
       expect(luhn('4')).toBe(false);
     });
   });
-});
-EOF
-git add backend/specs/luhn.spec.ts
-$COMMIT -m "test(luhn): rejects a single digit"
+});" > backend/specs/luhn.spec.ts
+
+npm run test:backend  # fails
+
+echo "export function luhn(): boolean {
+  # implement code here
+}" > src/luhn.ts
+
+npm run test:backend #passes
+
+git add .
+$COMMIT -m "Rejects a single digit"
 
 ###########################################################################
-# 3 - Luhn algorithm — GREEN: implement, verify, squash 15 commits → 1   #
+# 3 - Luhn algorithm — squash 14 commits                                  #
 ###########################################################################
 
-# Key insight: traverse digits right-to-left, doubling every second digit.
-# If doubling exceeds 9, subtract 9. Sum must be divisible by 10.
-
-cat << 'EOF' > backend/src/luhn.ts
-export function luhn(input: string): boolean {
-  const digits = input.replace(/[\s-]/g, '');
-
-  if (!/^\d+$/.test(digits) || digits.length < 9) return false;
-
-  let sum = 0;
-  let double = false;
-
-  for (let i = digits.length - 1; i >= 0; i--) {
-    let digit = parseInt(digits[i], 10);
-
-    if (double) {
-      digit *= 2;
-      if (digit > 9) digit -= 9;
-    }
-
-    sum += digit;
-    double = !double;
-  }
-
-  return sum % 10 === 0;
-}
-EOF
-
-cd backend && npm test   # 15 passed (14 luhn + 1 existing app spec)
-cd ..
-
-git add backend/src/luhn.ts
-$COMMIT -m "impl(luhn): Luhn checksum algorithm"
-
-# Squash 14 test commits + 1 impl commit into one clean commit
-git reset --soft HEAD~15
+# Squash 14 test commits into one clean commit
+git reset --soft HEAD~14
 $COMMIT -m "Implement Luhn checksum algorithm"
 
 ###########################################################################
 # 4 - POST /validate — RED: one test per commit                           #
 ###########################################################################
 
-cat << 'EOF' > backend/specs/validate.spec.ts
-import supertest from 'supertest';
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import cors from '@fastify/cors';
+import { luhn } from '#src/luhn';
+
+export const fastify = Fastify({
+  logger: process.env.ENV !== 'test',
+  ajv: { customOptions: { coerceTypes: false } },
+});
+
+await fastify.register(cors, {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  return {
+    status: 'Success',
+    result: process.env.ABOUT_MESSAGE ?? '',
+  };
+});
+
+const validator = async (_request: FastifyRequest<{ Body: unknown }>, _reply: FastifyReply) => {
+    return { valid: false };
+  };
+
+fastify.post('/validate', {}, validator);" > backend/src/app.ts
+
+echo "import supertest from 'supertest';
 import { fastify } from '#src/app';
 
 describe('POST /validate', () => {
@@ -685,13 +775,39 @@ describe('POST /validate', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ valid: true });
   });
-});
-EOF
-git add backend/specs/validate.spec.ts
-$COMMIT -m "test(validate): returns valid: true for a valid card number"
+});" > backend/specs/validate.spec.ts
 
-cat << 'EOF' > backend/specs/validate.spec.ts
-import supertest from 'supertest';
+npm run test:backend  # fails
+
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import cors from '@fastify/cors';
+import { luhn } from '#src/luhn';
+
+export const fastify = Fastify({
+  logger: process.env.ENV !== 'test',
+  ajv: { customOptions: { coerceTypes: false } },
+});
+
+await fastify.register(cors, {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  return {
+    status: 'Success',
+    result: process.env.ABOUT_MESSAGE ?? '',
+  };
+});
+
+#implementation here" > backend/src/app.ts
+
+npm run test:backend # passes
+
+git add .
+$COMMIT -m "Returns 'valid: true' for a valid card number"
+
+echo "import supertest from 'supertest';
 import { fastify } from '#src/app';
 
 describe('POST /validate', () => {
@@ -717,13 +833,39 @@ describe('POST /validate', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ valid: false });
   });
-});
-EOF
-git add backend/specs/validate.spec.ts
-$COMMIT -m "test(validate): returns valid: false for an invalid card number"
+});" > backend/specs/validate.spec.ts
 
-cat << 'EOF' > backend/specs/validate.spec.ts
-import supertest from 'supertest';
+npm run test:backend  # fails
+
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import cors from '@fastify/cors';
+import { luhn } from '#src/luhn';
+
+export const fastify = Fastify({
+  logger: process.env.ENV !== 'test',
+  ajv: { customOptions: { coerceTypes: false } },
+});
+
+await fastify.register(cors, {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  return {
+    status: 'Success',
+    result: process.env.ABOUT_MESSAGE ?? '',
+  };
+});
+
+#implementation here" > backend/src/app.ts
+
+npm run test:backend # passes
+
+git add .
+$COMMIT -m "Returns 'valid: false' for a invalid card number"
+
+echo "import supertest from 'supertest';
 import { fastify } from '#src/app';
 
 describe('POST /validate', () => {
@@ -759,13 +901,39 @@ describe('POST /validate', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ valid: true });
   });
-});
-EOF
-git add backend/specs/validate.spec.ts
-$COMMIT -m "test(validate): accepts card numbers with spaces"
+});" > backend/specs/validate.spec.ts
 
-cat << 'EOF' > backend/specs/validate.spec.ts
-import supertest from 'supertest';
+npm run test:backend  # fails
+
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import cors from '@fastify/cors';
+import { luhn } from '#src/luhn';
+
+export const fastify = Fastify({
+  logger: process.env.ENV !== 'test',
+  ajv: { customOptions: { coerceTypes: false } },
+});
+
+await fastify.register(cors, {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  return {
+    status: 'Success',
+    result: process.env.ABOUT_MESSAGE ?? '',
+  };
+});
+
+#implementation here" > backend/src/app.ts
+
+npm run test:backend # passes
+
+git add .
+$COMMIT -m "Accepts card numbers with spaces"
+
+echo "import supertest from 'supertest';
 import { fastify } from '#src/app';
 
 describe('POST /validate', () => {
@@ -811,13 +979,39 @@ describe('POST /validate', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ valid: true });
   });
-});
-EOF
-git add backend/specs/validate.spec.ts
-$COMMIT -m "test(validate): accepts card numbers with dashes"
+});" > backend/specs/validate.spec.ts
 
-cat << 'EOF' > backend/specs/validate.spec.ts
-import supertest from 'supertest';
+npm run test:backend  # fails
+
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import cors from '@fastify/cors';
+import { luhn } from '#src/luhn';
+
+export const fastify = Fastify({
+  logger: process.env.ENV !== 'test',
+  ajv: { customOptions: { coerceTypes: false } },
+});
+
+await fastify.register(cors, {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  return {
+    status: 'Success',
+    result: process.env.ABOUT_MESSAGE ?? '',
+  };
+});
+
+#implementation here" > backend/src/app.ts
+
+npm run test:backend # passes
+
+git add .
+$COMMIT -m "Accepts card numbers with dashes"
+
+echo "import supertest from 'supertest';
 import { fastify } from '#src/app';
 
 describe('POST /validate', () => {
@@ -872,13 +1066,39 @@ describe('POST /validate', () => {
 
     expect(response.status).toBe(400);
   });
-});
-EOF
-git add backend/specs/validate.spec.ts
-$COMMIT -m "test(validate): returns 400 when cardNumber is missing"
+});" > backend/specs/validate.spec.ts
 
-cat << 'EOF' > backend/specs/validate.spec.ts
-import supertest from 'supertest';
+npm run test:backend  # fails
+
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import cors from '@fastify/cors';
+import { luhn } from '#src/luhn';
+
+export const fastify = Fastify({
+  logger: process.env.ENV !== 'test',
+  ajv: { customOptions: { coerceTypes: false } },
+});
+
+await fastify.register(cors, {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  return {
+    status: 'Success',
+    result: process.env.ABOUT_MESSAGE ?? '',
+  };
+});
+
+#implementation here" > backend/src/app.ts
+
+npm run test:backend # passes
+
+git add .
+$COMMIT -m "Returns 400 when card number is missing"
+
+echo "import supertest from 'supertest';
 import { fastify } from '#src/app';
 
 describe('POST /validate', () => {
@@ -942,13 +1162,39 @@ describe('POST /validate', () => {
 
     expect(response.status).toBe(400);
   });
-});
-EOF
-git add backend/specs/validate.spec.ts
-$COMMIT -m "test(validate): returns 400 when cardNumber is not a string"
+});" > backend/specs/validate.spec.ts
 
-cat << 'EOF' > backend/specs/validate.spec.ts
-import supertest from 'supertest';
+npm run test:backend  # fails
+
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+import cors from '@fastify/cors';
+import { luhn } from '#src/luhn';
+
+export const fastify = Fastify({
+  logger: process.env.ENV !== 'test',
+  ajv: { customOptions: { coerceTypes: false } },
+});
+
+await fastify.register(cors, {
+  origin: process.env.ALLOWED_ORIGINS?.split(',') ?? true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+});
+
+fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
+  return {
+    status: 'Success',
+    result: process.env.ABOUT_MESSAGE ?? '',
+  };
+});
+
+#implementation here" > backend/src/app.ts
+
+npm run test:backend # passes
+
+git add .
+$COMMIT -m "Returns 400 when card number is not a string"
+
+echo "import supertest from 'supertest';
 import { fastify } from '#src/app';
 
 describe('POST /validate', () => {
@@ -1022,20 +1268,11 @@ describe('POST /validate', () => {
     expect(response.status).toBe(200);
     expect(response.body).toEqual({ valid: false });
   });
-});
-EOF
-git add backend/specs/validate.spec.ts
-$COMMIT -m "test(validate): returns valid: false for an empty string"
+});" > backend/specs/validate.spec.ts
 
-###########################################################################
-# 5 - POST /validate — GREEN: implement, verify, squash 8 commits → 1    #
-###########################################################################
+npm run test:backend  # fails
 
-# coerceTypes: false prevents AJV from silently casting numbers to strings.
-# JSON schema validation gives us the 400 responses for free.
-
-cat << 'EOF' > backend/src/app.ts
-import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
+echo "import Fastify, { FastifyRequest, FastifyReply } from 'fastify';
 import cors from '@fastify/cors';
 import { luhn } from '#src/luhn';
 
@@ -1056,46 +1293,26 @@ fastify.get('/', async (_request: FastifyRequest, _reply: FastifyReply) => {
   };
 });
 
-interface ValidateBody {
-  cardNumber: string;
-}
+#implementation here" > backend/src/app.ts
 
-fastify.post(
-  '/validate',
-  {
-    schema: {
-      body: {
-        type: 'object',
-        required: ['cardNumber'],
-        properties: {
-          cardNumber: { type: 'string' },
-        },
-        additionalProperties: false,
-      },
-    },
-  },
-  async (request: FastifyRequest<{ Body: ValidateBody }>, _reply: FastifyReply) => {
-    return { valid: luhn(request.body.cardNumber) };
-  },
-);
-EOF
+npm run test:backend # passes
 
-cd backend && npm test   # 22 passed (14 luhn + 7 validate + 1 existing app spec)
-cd ..
-
-git add backend/src/app.ts
-$COMMIT -m "impl(validate): POST /validate endpoint"
-
-# Squash 7 test commits + 1 impl commit into one clean commit
-git reset --soft HEAD~8
-$COMMIT -m "add POST /validate endpoint using Luhn algorithm"
+git add .
+$COMMIT -m "Returns valid: false for an empty string"
 
 ###########################################################################
-# 6 - Frontend card store — RED: one test per commit                      #
+# 5 - POST /validate squash 7                                             #
 ###########################################################################
 
-cat << 'EOF' > frontend/src/specs/cardStore.spec.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+# Squash 7 test commits into one clean commit
+git reset --soft HEAD~7
+$COMMIT -m "Add POST /validate endpoint using Luhn algorithm"
+
+###########################################################################
+# 6 - Frontend card store                                                 #
+###########################################################################
+
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCardStore } from '../stores/cardStore';
 import { apiClient } from '../api/client';
 
@@ -1115,13 +1332,11 @@ describe('cardStore', () => {
     expect(loading).toBe(false);
     expect(error).toBeNull();
   });
-});
-EOF
+});" > frontend/src/specs/cardStore.spec.ts
 git add frontend/src/specs/cardStore.spec.ts
 $COMMIT -m "test(cardStore): starts with null validity, not loading, and no error"
 
-cat << 'EOF' > frontend/src/specs/cardStore.spec.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCardStore } from '../stores/cardStore';
 import { apiClient } from '../api/client';
 
@@ -1152,13 +1367,11 @@ describe('cardStore', () => {
     resolvePromise({ data: { valid: true } });
     await validatePromise;
   });
-});
-EOF
+});" > frontend/src/specs/cardStore.spec.ts
 git add frontend/src/specs/cardStore.spec.ts
 $COMMIT -m "test(cardStore): sets loading to true while the request is in flight"
 
-cat << 'EOF' > frontend/src/specs/cardStore.spec.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCardStore } from '../stores/cardStore';
 import { apiClient } from '../api/client';
 
@@ -1200,13 +1413,11 @@ describe('cardStore', () => {
     expect(loading).toBe(false);
     expect(error).toBeNull();
   });
-});
-EOF
+});" > frontend/src/specs/cardStore.spec.ts
 git add frontend/src/specs/cardStore.spec.ts
 $COMMIT -m "test(cardStore): sets isValid to true for a valid card number"
 
-cat << 'EOF' > frontend/src/specs/cardStore.spec.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCardStore } from '../stores/cardStore';
 import { apiClient } from '../api/client';
 
@@ -1259,13 +1470,11 @@ describe('cardStore', () => {
     expect(loading).toBe(false);
     expect(error).toBeNull();
   });
-});
-EOF
+});" > frontend/src/specs/cardStore.spec.ts
 git add frontend/src/specs/cardStore.spec.ts
 $COMMIT -m "test(cardStore): sets isValid to false for an invalid card number"
 
-cat << 'EOF' > frontend/src/specs/cardStore.spec.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCardStore } from '../stores/cardStore';
 import { apiClient } from '../api/client';
 
@@ -1329,13 +1538,11 @@ describe('cardStore', () => {
     expect(loading).toBe(false);
     expect(error).toBe('Network error');
   });
-});
-EOF
+});" > frontend/src/specs/cardStore.spec.ts
 git add frontend/src/specs/cardStore.spec.ts
 $COMMIT -m "test(cardStore): sets error and clears isValid when the request fails"
 
-cat << 'EOF' > frontend/src/specs/cardStore.spec.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCardStore } from '../stores/cardStore';
 import { apiClient } from '../api/client';
 
@@ -1407,13 +1614,11 @@ describe('cardStore', () => {
 
     expect(mockedPost).toHaveBeenCalledWith('/validate', { cardNumber: '4532015112830366' });
   });
-});
-EOF
+});" > frontend/src/specs/cardStore.spec.ts
 git add frontend/src/specs/cardStore.spec.ts
 $COMMIT -m "test(cardStore): calls POST /validate with the card number"
 
-cat << 'EOF' > frontend/src/specs/cardStore.spec.ts
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { useCardStore } from '../stores/cardStore';
 import { apiClient } from '../api/client';
 
@@ -1494,8 +1699,7 @@ describe('cardStore', () => {
 
     expect(useCardStore.getState().error).toBeNull();
   });
-});
-EOF
+});" > frontend/src/specs/cardStore.spec.ts
 git add frontend/src/specs/cardStore.spec.ts
 $COMMIT -m "test(cardStore): clears the previous error on a new request"
 
@@ -1503,8 +1707,7 @@ $COMMIT -m "test(cardStore): clears the previous error on a new request"
 # 7 - Frontend card store — GREEN: implement, verify, squash 8 commits → 1
 ###########################################################################
 
-cat << 'EOF' > frontend/src/stores/cardStore.ts
-import { create } from 'zustand';
+echo "import { create } from 'zustand';
 import { apiClient } from '../api/client';
 
 interface CardState {
@@ -1529,8 +1732,7 @@ export const useCardStore = create<CardState>((set) => ({
       set({ isValid: null, error: message, loading: false });
     }
   },
-}));
-EOF
+}));" > frontend/src/stores/cardStore.ts
 
 cd frontend && npm test   # 13 passed (7 cardStore + 4 appStore + 2 App routing)
 cd ..
@@ -1549,8 +1751,7 @@ $COMMIT -m "Implement credit card validation store"
 # Note: getByText(/valid/i) would collide with the "Validate" button text.
 # Use getByText(/valid card number/i) — lesson learned.
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material';
 import CardValidator from '../components/CardValidator';
@@ -1583,13 +1784,11 @@ describe('CardValidator', () => {
     renderWithProviders(<CardValidator />);
     expect(screen.getByRole('textbox', { name: /card number/i })).toBeInTheDocument();
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): renders a card number input"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material';
 import CardValidator from '../components/CardValidator';
@@ -1627,13 +1826,11 @@ describe('CardValidator', () => {
     renderWithProviders(<CardValidator />);
     expect(screen.getByRole('button', { name: /validate/i })).toBeInTheDocument();
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): renders a validate button"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { ThemeProvider, createTheme } from '@mui/material';
 import CardValidator from '../components/CardValidator';
@@ -1676,13 +1873,11 @@ describe('CardValidator', () => {
     renderWithProviders(<CardValidator />);
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): does not show a result before any validation"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -1735,13 +1930,11 @@ describe('CardValidator', () => {
 
     expect(mockValidateCard).toHaveBeenCalledWith('4532015112830366');
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): calls validateCard with the entered card number on submit"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -1808,13 +2001,11 @@ describe('CardValidator', () => {
     expect(screen.getByRole('button', { name: /validating/i })).toBeDisabled();
     expect(screen.getByRole('textbox', { name: /card number/i })).toBeDisabled();
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): disables the button and input while loading"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -1895,13 +2086,11 @@ describe('CardValidator', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
     expect(screen.getByText(/valid card number/i)).toBeInTheDocument();
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): shows a success alert when the card is valid"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -1996,13 +2185,11 @@ describe('CardValidator', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
     expect(screen.getByText(/invalid/i)).toBeInTheDocument();
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): shows an error alert when the card is invalid"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -2111,13 +2298,11 @@ describe('CardValidator', () => {
     expect(screen.getByRole('alert')).toBeInTheDocument();
     expect(screen.getByText(/network error/i)).toBeInTheDocument();
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): shows an error alert when the request fails"
 
-cat << 'EOF' > frontend/src/specs/CardValidator.spec.tsx
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+echo "import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider, createTheme } from '@mui/material';
@@ -2236,8 +2421,7 @@ describe('CardValidator', () => {
       expect(mockValidateCard).not.toHaveBeenCalled();
     });
   });
-});
-EOF
+});" > frontend/src/specs/CardValidator.spec.tsx
 git add frontend/src/specs/CardValidator.spec.tsx
 $COMMIT -m "test(CardValidator): does not submit when the input is empty"
 
@@ -2249,8 +2433,7 @@ $COMMIT -m "test(CardValidator): does not submit when the input is empty"
 
 mkdir -p frontend/src/components
 
-cat << 'EOF' > frontend/src/components/CardValidator.tsx
-import { useState } from 'react';
+echo "import { useState } from 'react';
 import { Alert, Box, Button, CircularProgress, TextField } from '@mui/material';
 import { useCardStore } from '../stores/cardStore';
 
@@ -2266,53 +2449,50 @@ export default function CardValidator() {
 
   return (
     <Box
-      component="form"
+      component=\"form\"
       onSubmit={handleSubmit}
       noValidate
       sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}
     >
       <TextField
-        label="Card Number"
+        label=\"Card Number\"
         value={cardNumber}
         onChange={(e) => setCardNumber(e.target.value)}
         disabled={loading}
         fullWidth
-        placeholder="e.g. 4532 0151 1283 0366"
+        placeholder=\"e.g. 4532 0151 1283 0366\"
         slotProps={{ htmlInput: { maxLength: 19 } }}
       />
-      <Button type="submit" variant="contained" disabled={loading} sx={{ alignSelf: 'flex-start' }}>
+      <Button type=\"submit\" variant=\"contained\" disabled={loading} sx={{ alignSelf: 'flex-start' }}>
         {loading ? (
           <>
-            <CircularProgress size={16} color="inherit" sx={{ mr: 1 }} />
+            <CircularProgress size={16} color=\"inherit\" sx={{ mr: 1 }} />
             Validating...
           </>
         ) : (
           'Validate'
         )}
       </Button>
-      {isValid === true && <Alert severity="success">Valid card number.</Alert>}
-      {isValid === false && <Alert severity="error">Invalid card number.</Alert>}
-      {error && <Alert severity="error">{error}</Alert>}
+      {isValid === true && <Alert severity=\"success\">Valid card number.</Alert>}
+      {isValid === false && <Alert severity=\"error\">Invalid card number.</Alert>}
+      {error && <Alert severity=\"error\">{error}</Alert>}
     </Box>
   );
-}
-EOF
+}" > frontend/src/components/CardValidator.tsx
 
-cat << 'EOF' > frontend/src/pages/Home.tsx
-import { Container, Typography } from '@mui/material';
+echo "import { Container, Typography } from '@mui/material';
 import CardValidator from '../components/CardValidator';
 
 export default function Home() {
   return (
-    <Container maxWidth="sm" sx={{ mt: 6 }}>
-      <Typography variant="h4" gutterBottom>
+    <Container maxWidth=\"sm\" sx={{ mt: 6 }}>
+      <Typography variant=\"h4\" gutterBottom>
         Credit Card Validator
       </Typography>
       <CardValidator />
     </Container>
   );
-}
-EOF
+}" > frontend/src/pages/Home.tsx
 
 cd frontend && npm test   # 22 passed
 cd ..
