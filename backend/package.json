@@ -16,7 +16,7 @@
     "#src/*": "./src/*.ts"
   },
   "dependencies": {
-    "@fastify/aws-lambda": "^6.4.0",
+    "@fastify/aws-lambda": "^6.4.1",
     "@fastify/cors": "^11.3.0",
     "fastify": "^5.11.2"
   },
