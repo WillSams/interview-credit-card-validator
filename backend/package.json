@@ -21,7 +21,7 @@
     "fastify": "^5.12.5"
   },
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.163",
+    "@types/aws-lambda": "^8.10.164",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.9.3",
     "@types/supertest": "^7.2.1",
